@@ -6,7 +6,19 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+
+    <RootNamespace>Algorithms.TreeDifference.Testing</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="TestData\Document1.xml" />
+    <None Remove="TestData\Document2.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestData\Document1.xml" />
+    <EmbeddedResource Include="TestData\Document2.xml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
@@ -17,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TreeEditDifference\TreeEditDifference.csproj" />
+    <ProjectReference Include="..\XmlDifference\XmlTreeDifference.csproj" />
   </ItemGroup>
 
 </Project>

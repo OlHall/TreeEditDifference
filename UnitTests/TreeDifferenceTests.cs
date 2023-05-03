@@ -148,8 +148,8 @@ namespace Algorithms.TreeDifference.Testing
         }
 
         [DataTestMethod]
-        [DataRow("{e{fg{i}}}", "{e{fg{h}}}", 1)]
-        [DataRow("{f{d{ac{b}}e}}", "{f{ab{c}}}", 3)] // 09 - Temp\tree-similarity-master\build\Debug>ted.exe "string" "{f{d{ac{b}}e}}" "{f{ab{c}}}"
+        [DataRow("{e{fg{i}}}", "{e{fg{h}}}", 1)] // Simple failure
+        [DataRow("{f{d{ac{b}}e}}", "{f{ab{c}}}", 4)] // 09 - Temp\tree-similarity-master\build\Debug>ted.exe "string" "{f{d{ac{b}}e}}" "{f{ab{c}}}"
         [DataRow("{a{b{cd}e{fg{i}}}}", "{a{b{cd}e{fg{h}}}}", 1)]
         [DataRow("{d}", "{g{h}}", 2)]
         [DataRow("{f{a{hc{i}}e}}","{f{a{dc{b}}e}}",2)] // Another (broken!) example  - https://pythonhosted.org/zss/
@@ -216,11 +216,11 @@ namespace Algorithms.TreeDifference.Testing
             ZhangShasha<char, CharEditCost, CharTreeEquality> algo = new(treeA, treeB);
 
             int ted = algo.Compare();
-            Operation[] ops = algo.EditOperations;
+            List<Operation> ops = algo.EditOperations();
             Assert.AreEqual(zssPaperTED, ted);
-            Assert.AreEqual(zssPaperTED, ops.Length);
-            Assert.AreEqual(Operation.Op.Delete, ops[0].EditOp);
-            Assert.AreEqual(Operation.Op.Insert, ops[1].EditOp);
+            Assert.AreEqual(zssPaperTED, ops.Count);
+            Assert.AreEqual(Operation.OpType.Delete, ops[0].EditOp);
+            Assert.AreEqual(Operation.OpType.Insert, ops[1].EditOp);
         }
     }
 }
