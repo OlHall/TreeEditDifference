@@ -13,10 +13,14 @@
   <ItemGroup>
     <None Remove="TestData\Document1.xml" />
     <None Remove="TestData\Document2.xml" />
+    <None Remove="TestData\Document3.xml" />
+    <None Remove="TestData\Document4.xml" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="TestData\Document1.xml" />
+    <EmbeddedResource Include="TestData\Document4.xml" />
+    <EmbeddedResource Include="TestData\Document3.xml" />
     <EmbeddedResource Include="TestData\Document2.xml" />
   </ItemGroup>
 

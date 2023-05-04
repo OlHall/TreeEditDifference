@@ -2,7 +2,7 @@
 <root>
 	<leaf/>
 	<branch>
-		<leaf/>
+		<leaf attr="Something"/>
 	</branch>
-	<leaf>With Content</leaf>
+	<leaf>Different Content</leaf>
 </root>

@@ -13,11 +13,10 @@
             Insert,
             Delete,
             Change,
-            Match,
-            NoOp
+            Match
         }
 
-        public OpType EditOp = OpType.NoOp;
+        public OpType EditOp = OpType.Match;
         public int PostOrderIndex1;
         public int PostOrderIndex2;
 

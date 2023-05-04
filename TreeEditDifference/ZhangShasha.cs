@@ -63,7 +63,7 @@ namespace Algorithms.TreeDifference
             }
             else
             {
-                List<Operation> operations = new List<Operation>();
+                List<Operation> operations = new();
                 foreach(Operation op in _operations[_treeA.Size, _treeB.Size])
                 {
                     if( op.EditOp != Operation.OpType.Match )
@@ -97,14 +97,18 @@ namespace Algorithms.TreeDifference
             for (int m = 1; m <= treeSizeA; ++m)
             {
                 fd[m, 0] = fd[m-1, 0] + _cost.Cost(Operation.OpType.Delete, null, null);
+#pragma warning disable IDE0028 // Simplify collection initialization
                 pOps[m, 0] = new List<Operation>(pOps[m-1,0]);
+#pragma warning restore IDE0028 // Simplify collection initialization
                 pOps[m, 0].Add(new Operation(Operation.OpType.Delete, fdALeft + m - 1, 0));
             }
 
             for (int n = 1; n <= treeSizeB; ++n)
             {
                 fd[0, n] = fd[0, n - 1] + _cost.Cost(Operation.OpType.Insert, null, null);
+#pragma warning disable IDE0028 // Simplify collection initialization
                 pOps[0,n] = new List<Operation>(pOps[0,n-1]);
+#pragma warning restore IDE0028 // Simplify collection initialization
                 pOps[0, n].Add(new Operation(Operation.OpType.Insert, 0, fdBLeft + n - 1));
             }
 
@@ -133,25 +137,31 @@ namespace Algorithms.TreeDifference
                         // This is not part of Zhang-Shasha but provides the edit script for the least cost different
                         // taken from a superb Python implementation
                         // https://github.com/timtadh/zhang-shasha
-                        Operation.OpType op = SelectOperation(costDel, costIns, costChg, match);
+                        Operation.OpType op = ZhangShasha<T, C, E>.SelectOperation(costDel, costIns, costChg, match);
                         switch( op )
                         {
                             case Operation.OpType.Delete:
                                 {
+#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi - 1, fdj]);
+#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, m, 0));
                                     break;
                                 }
                             case Operation.OpType.Insert:
                                 {
+#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi, fdj-1]);
+#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, 0, n));
                                     break;
                                 }
                             case Operation.OpType.Change:
                             case Operation.OpType.Match:
                                 {
+#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi - 1, fdj - 1]);
+#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, m, n));
                                     break;
                                 }
@@ -171,18 +181,22 @@ namespace Algorithms.TreeDifference
                         // taken from a superb Python implementation
                         // https://github.com/timtadh/zhang-shasha
                         bool match = _check.EqualTo(_treeA[m].Value, _treeB[n].Value);
-                        Operation.OpType op = SelectOperation(costDel, costIns, costChg, match);
+                        Operation.OpType op = ZhangShasha<T, C, E>.SelectOperation(costDel, costIns, costChg, match);
                         switch( op )
                         {
                             case Operation.OpType.Delete:
                                 {
+#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi - 1, fdj]);
+#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, m, 0));
                                     break;
                                 }
                             case Operation.OpType.Insert:
                                 {
+#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi, fdj - 1]);
+#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, 0, n));
                                     break;
                                 }
@@ -213,7 +227,7 @@ namespace Algorithms.TreeDifference
         /// <param name="costChg">The cost of a change</param>
         /// <param name="match">A change might be a match</param>
         /// <returns>The lowest cost operation</returns>
-        private Operation.OpType SelectOperation(int costDel, int costIns, int costChg, bool match)
+        private static Operation.OpType SelectOperation(int costDel, int costIns, int costChg, bool match)
         {
             if ((costChg <= costDel) && (costChg <= costIns))
             {
