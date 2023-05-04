@@ -6,5 +6,6 @@
  After a great deal of searching, head scratching and failed tests, this code - and notes pointing to other papers providing further analysis of Zhang-Shasha - was what allowed me to fix the bugs I'm aware of.
 
 ### Known Issues (Work In Progress)
+* XML Edit distance is mis-reporting when more than a simple node element difference
 * The edit operations are reporting a change at the root which shouldn't be there
 * The XmlEditOperation printer is outputting the entire tree rather than just the node - that should be an easy one!

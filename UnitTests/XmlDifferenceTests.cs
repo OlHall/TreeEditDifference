@@ -47,6 +47,7 @@ namespace Algorithms.TreeDifference.Testing
             int ted = diff.EditDifference;
             DumpEditOps(diff.Operations);
             Assert.AreEqual(0, ted);
+            Assert.AreEqual(ted, diff.Operations.Count);    // This should be true for unit-cost edit operations, which XmlDifference uses
         }
 
         [TestMethod]
@@ -58,6 +59,7 @@ namespace Algorithms.TreeDifference.Testing
             int ted = diff.EditDifference;
             DumpEditOps(diff.Operations);
             Assert.AreEqual(2, ted);
+            Assert.AreEqual(ted, diff.Operations.Count);    // This should be true for unit-cost edit operations, which XmlDifference uses
         }
 
         [TestMethod]
@@ -69,6 +71,7 @@ namespace Algorithms.TreeDifference.Testing
             int ted = diff.EditDifference;
             DumpEditOps(diff.Operations);
             Assert.AreEqual(1, ted);
+            Assert.AreEqual(ted, diff.Operations.Count);    // This should be true for unit-cost edit operations, which XmlDifference uses
         }
 
         [TestMethod]
@@ -80,6 +83,7 @@ namespace Algorithms.TreeDifference.Testing
             int ted = diff.EditDifference;
             DumpEditOps(diff.Operations);
             Assert.AreEqual(1, ted);
+            Assert.AreEqual(ted, diff.Operations.Count);    // This should be true for unit-cost edit operations, which XmlDifference uses
         }
 
         private static void DumpEditOps(List<XmlEditOperation> ops)
