@@ -148,6 +148,7 @@ namespace Algorithms.TreeDifference.Testing
         }
 
         [DataTestMethod]
+        [DataRow("{a{bc{d}e}}", "{a{bc{d}f}}", 1)] // Mimics structure of XML doc2 -> doc3
         [DataRow("{e{fg{i}}}", "{e{fg{h}}}", 1)] // Simple failure
         [DataRow("{f{d{ac{b}}e}}", "{f{ab{c}}}", 4)] // 09 - Temp\tree-similarity-master\build\Debug>ted.exe "string" "{f{d{ac{b}}e}}" "{f{ab{c}}}"
         [DataRow("{a{b{cd}e{fg{i}}}}", "{a{b{cd}e{fg{h}}}}", 1)]

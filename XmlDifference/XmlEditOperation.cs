@@ -1,5 +1,6 @@
 ﻿using Algorithms.TreeDifference;
 using Algorithms.TreeDifference.Tree;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Algorithms.XmlTreeDifference
@@ -20,19 +21,51 @@ namespace Algorithms.XmlTreeDifference
         {
             if(( _treeANode != null) && (_treeBNode != null))
             {
-                return $"{_op.EditOp}:\n  '{_treeANode}'\n  => '{_treeBNode}'";
+                return $"{_op.EditOp}: '{FormattedElement(_treeANode)}'\n     => '{FormattedElement(_treeBNode)}'";
             }
             else if( _treeANode != null )
             {
-                return $"{_op.EditOp}:\n  '{_treeANode}'";
+                return $"{_op.EditOp}: '{FormattedElement(_treeANode)}'";
             }
-            else if (_treeANode != null)
+            else if (_treeBNode != null)
             {
-                return $"{_op.EditOp}:\n  '{_treeBNode}'";
+                return $"{_op.EditOp}: '{FormattedElement(_treeBNode)}'";
             }
             else
             {
                 return $"{_op.EditOp} - no nodes?";
+            }
+        }
+
+        private static string FormattedElement(XElement elem)
+        {
+            if (elem.NodeType == System.Xml.XmlNodeType.Element)
+            {
+                StringBuilder sb = new("<" + elem.Name);
+                foreach ( XAttribute attr in elem.Attributes())
+                {
+                    sb.Append($" {attr.Name}=\"{attr.Value}\"");
+                }
+                if (elem.HasElements)
+                {
+                    sb.Append('>');
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(elem.Value))
+                    {
+                        sb.Append(" />");
+                    }
+                    else
+                    {
+                        sb.Append($">{elem.Value}</{elem.Name}>");
+                    }
+                }
+                return sb.ToString();
+            }
+            else
+            {
+                return "<TODO: Not an element?>";
             }
         }
     }

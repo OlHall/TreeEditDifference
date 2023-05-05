@@ -43,8 +43,8 @@ namespace Algorithms.XmlTreeDifference
                 }
             }
 
-            // Is there any content, and is it different?
-            if (a.Value != b.Value)
+            // Is there any immediate content, and is it different?
+            if ((!a.HasElements && !b.HasElements) && (a.Value != b.Value))
             {
                 return false;
             }
