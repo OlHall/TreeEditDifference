@@ -5,10 +5,25 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Algorithms.XmlTreeDifference</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>XML Tree Edit Distance</Title>
+    <Authors>ohall</Authors>
+    <RepositoryUrl>https://github.com/OlHall/TreeEditDifference</RepositoryUrl>
+    <Description>An extension of the Zhang Shasha Tree Edit difference for XML documents</Description>
+    <PackageTags>Tree Edit Distance, XML Difference, Zhang Shasha</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TreeEditDifference\TreeEditDifference.csproj" />
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TreeEditDifference" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
