@@ -13,7 +13,8 @@
             Insert,
             Delete,
             Change,
-            Match
+            Match,
+            Similar    // A special case where a node is essentially a match, but worthy of further investigation
         }
 
         public OpType EditOp = OpType.Match;
@@ -29,6 +30,7 @@
                 case OpType.Delete: opCh = 'D'; break;
                 case OpType.Change: opCh = 'C'; break;
                 case OpType.Match: opCh = 'M'; break;
+                case OpType.Similar: opCh = 'S'; break;
             }
             return $"{opCh}:{PostOrderIndex1:00}->{PostOrderIndex2:00}";
         }

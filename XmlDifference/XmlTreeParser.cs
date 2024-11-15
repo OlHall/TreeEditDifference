@@ -5,6 +5,13 @@ namespace Algorithms.XmlTreeDifference
 {
     internal class XmlTreeParser : ITreeParser<XElement>
     {
+        private readonly bool _descendChildren;
+
+        public XmlTreeParser(bool descendChildren)
+        {
+            _descendChildren = descendChildren;
+        }
+
         public Node<XElement> Parse(object root)
         {
             return ParseItem((XElement)root, null);
@@ -12,24 +19,28 @@ namespace Algorithms.XmlTreeDifference
 
         private Node<XElement> ParseItem(XElement element, Node<XElement>? parent)
         {
+            Node<XElement> item = new Node<XElement>(element, parent);
+
             if (element.HasElements)
             {
-                return ParseList(element, parent);
+                ParseList(item, element);
             }
-            else
-            {
-                return new Node<XElement>(element, parent);
-            }
+            return item;
         }
 
-        private Node<XElement> ParseList(XElement element, Node<XElement>? parent)
+        private void ParseList(Node<XElement> newNode, XElement element)
         {
-            Node<XElement> node = new(element, parent);
             foreach (XElement e in element.Elements())
             {
-                node.Children.Add(ParseItem(e, node));
+                if( _descendChildren )
+                {
+                    newNode.Children.Add(ParseItem(e, newNode));
+                }
+                else
+                {
+                    newNode.Children.Add(new Node<XElement>(e, newNode));
+                }
             }
-            return node;
         }
 
     }

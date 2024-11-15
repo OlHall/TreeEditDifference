@@ -5,6 +5,11 @@ namespace Algorithms.XmlTreeDifference
 {
     internal class XmlNodeEquality : ITreeNodeEquality<XElement>
     {
+        public bool Exact(XElement a, XElement b)
+        {
+            return true;
+        }
+
         public bool EqualTo(XElement a, XElement b)
         {
             // Fundamental... different element?
@@ -24,10 +29,12 @@ namespace Algorithms.XmlTreeDifference
             {
                 bAttrs.Add(attr.Name.ToString(), attr.Value);
             }
+
             if( aAttrs.Count != bAttrs.Count)
             {
                 return false;
             }
+
             foreach(string attr in aAttrs.Keys)
             {
                 if(bAttrs.ContainsKey(attr))

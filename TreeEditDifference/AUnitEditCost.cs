@@ -12,6 +12,7 @@ namespace Algorithms.TreeDifference
                 case Operation.OpType.Delete:
                 case Operation.OpType.Insert:
                 case Operation.OpType.Change:
+                case Operation.OpType.Similar:
                     return 1;
                 default:
                     return 0;

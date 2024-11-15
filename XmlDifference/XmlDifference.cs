@@ -1,5 +1,6 @@
 ﻿using Algorithms.TreeDifference;
 using Algorithms.TreeDifference.Tree;
+using BluOsXmlDiff.Model;
 using System.Xml.Linq;
 
 namespace Algorithms.XmlTreeDifference
@@ -12,7 +13,7 @@ namespace Algorithms.XmlTreeDifference
 
         public XmlDifference(XElement rootA, XElement rootB)
         {
-            XmlTreeParser parser = new();
+            XmlTreeParser parser = new(true);
             _treeA = new Tree<XElement>(rootA, parser);
             _treeB = new Tree<XElement>(rootB, parser);
         }
@@ -32,16 +33,16 @@ namespace Algorithms.XmlTreeDifference
         {
             get
             {
-                if( _ops == null )
+                if (_ops == null)
                 {
                     return new List<XmlEditOperation>();
                 }
                 else
                 {
                     List<XmlEditOperation> ops = new();
-                    foreach(Operation op in _ops)
+                    foreach (Operation op in _ops)
                     {
-                        if( op.EditOp != Operation.OpType.Match )
+                        if (op.EditOp != Operation.OpType.Match)
                         {
                             ops.Add(new XmlEditOperation(op, _treeA, _treeB));
                         }

@@ -1,4 +1,5 @@
 ﻿using Algorithms.TreeDifference.Tree;
+using System.Diagnostics;
 
 namespace Algorithms.TreeDifference
 {
@@ -48,7 +49,7 @@ namespace Algorithms.TreeDifference
                 }
             }
 
-#if DEBUG
+#if DEBUG_DIFF
             DumpTable(1, 1, _treeA.Size, _treeB.Size, _treeDistance, "TD");
             DumpOperations(_treeA.Size, _treeB.Size);
 #endif
@@ -126,10 +127,11 @@ namespace Algorithms.TreeDifference
                     // Test to see the nodes being compared fall within the same sub-tree in each tree
                     if ((_treeA.HasMatchingLeftMost(m,i)) && (_treeB.HasMatchingLeftMost(n,j)))
                     {
-#if DEBUG
-                        Console.WriteLine($"Left Node Match => [{m},{n}]");
+#if DEBUG_DIFF
+                        Debug.WriteLine($"Left Node Match => [{m},{n}]");
 #endif
                         bool match = _check.EqualTo(_treeA[m].Value, _treeB[n].Value);
+                        bool exact = match ? _check.Exact(_treeA[m].Value, _treeB[n].Value) : false;
                         int costChg = fd[fdi - 1, fdj - 1] + (match ? 0 : _cost.Cost(Operation.OpType.Change, _treeA[m], _treeB[n]));
                         fd[fdi, fdj] = Math.Min(Math.Min(costDel, costIns), costChg);
                         _treeDistance[m, n] = fd[fdi, fdj];
@@ -137,31 +139,24 @@ namespace Algorithms.TreeDifference
                         // This is not part of Zhang-Shasha but provides the edit script for the least cost different
                         // taken from a superb Python implementation
                         // https://github.com/timtadh/zhang-shasha
-                        Operation.OpType op = ZhangShasha<T, C, E>.SelectOperation(costDel, costIns, costChg, match);
+                        Operation.OpType op = ZhangShasha<T, C, E>.SelectOperation(costDel, costIns, costChg, match, exact);
                         switch( op )
                         {
                             case Operation.OpType.Delete:
                                 {
-#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi - 1, fdj]);
-#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, m, 0));
                                     break;
                                 }
                             case Operation.OpType.Insert:
                                 {
-#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi, fdj-1]);
-#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, 0, n));
                                     break;
                                 }
-                            case Operation.OpType.Change:
-                            case Operation.OpType.Match:
+                            default: // Match, Similar or Change
                                 {
-#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi - 1, fdj - 1]);
-#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, m, n));
                                     break;
                                 }
@@ -171,8 +166,8 @@ namespace Algorithms.TreeDifference
                     // If not, then use the result from a previously calculated sub-problem
                     else
                     {
-#if DEBUG
-                        Console.WriteLine($"Left Node Pre Calc => [{_treeA[m].LeftMostIndex-1},{_treeB[n].LeftMostIndex-1}] => [{_treeA[m].LeftMostIndex - fdALeft},{_treeB[n].LeftMostIndex - fdBLeft}]");
+#if DEBUG_DIFF
+                        Debug.WriteLine($"Left Node Pre Calc => [{_treeA[m].LeftMostIndex-1},{_treeB[n].LeftMostIndex-1}] => [{_treeA[m].LeftMostIndex - fdALeft},{_treeB[n].LeftMostIndex - fdBLeft}]");
 #endif
                         int costChg = fd[_treeA[m].LeftMostIndex - fdALeft, _treeB[n].LeftMostIndex - fdBLeft] + _treeDistance[m, n];
                         fd[fdi, fdj] = Math.Min(Math.Min(costDel, costIns), costChg);
@@ -181,27 +176,23 @@ namespace Algorithms.TreeDifference
                         // taken from a superb Python implementation
                         // https://github.com/timtadh/zhang-shasha
                         bool match = _check.EqualTo(_treeA[m].Value, _treeB[n].Value);
-                        Operation.OpType op = ZhangShasha<T, C, E>.SelectOperation(costDel, costIns, costChg, match);
+                        bool exact = match ? _check.Exact(_treeA[m].Value, _treeB[n].Value) : false;
+                        Operation.OpType op = ZhangShasha<T, C, E>.SelectOperation(costDel, costIns, costChg, match, exact);
                         switch( op )
                         {
                             case Operation.OpType.Delete:
                                 {
-#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi - 1, fdj]);
-#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, m, 0));
                                     break;
                                 }
                             case Operation.OpType.Insert:
                                 {
-#pragma warning disable IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj] = new List<Operation>(pOps[fdi, fdj - 1]);
-#pragma warning restore IDE0028 // Simplify collection initialization
                                     pOps[fdi, fdj].Add(new Operation(op, 0, n));
                                     break;
                                 }
-                            case Operation.OpType.Change:
-                            case Operation.OpType.Match:
+                            default: // Match, Similar or Change
                                 {
                                     pOps[fdi, fdj] = new List<Operation>(pOps[_treeA[m].LeftMostIndex - fdALeft, _treeB[n].LeftMostIndex - fdBLeft]);
                                     pOps[fdi, fdj].AddRange(_operations[m,n]);
@@ -212,7 +203,7 @@ namespace Algorithms.TreeDifference
                 }
             }
 
-#if DEBUG
+#if DEBUG_DIFF
             DumpTable(_treeA[i].LeftMostIndex, _treeB[j].LeftMostIndex, i, j, fd, "fd");
 #endif
 
@@ -226,12 +217,27 @@ namespace Algorithms.TreeDifference
         /// <param name="costIns">The cost of an insertion</param>
         /// <param name="costChg">The cost of a change</param>
         /// <param name="match">A change might be a match</param>
+        /// <param name="similar">A macth might not be exact</param>
         /// <returns>The lowest cost operation</returns>
-        private static Operation.OpType SelectOperation(int costDel, int costIns, int costChg, bool match)
+        private static Operation.OpType SelectOperation(int costDel, int costIns, int costChg, bool match, bool exact)
         {
             if ((costChg <= costDel) && (costChg <= costIns))
             {
-                return match ? Operation.OpType.Match : Operation.OpType.Change;
+                if( match )
+                {
+                    if( !exact )
+                    {
+                        return Operation.OpType.Similar;
+                    }
+                    else
+                    {
+                        return Operation.OpType.Match;
+                    }
+                }
+                else
+                {
+                    return Operation.OpType.Change;
+                }
             }
             else if (costDel < costIns)
             {
@@ -246,10 +252,10 @@ namespace Algorithms.TreeDifference
 #if DEBUG
         private void DumpTable(int si, int sj, int i, int j, int[,] table, string label = "  ")
         {
-            Console.WriteLine("--");
-            Console.WriteLine("SubTree A(i) = " + i + ", B(j) = " + j);
+            Debug.WriteLine("--");
+            Debug.WriteLine("SubTree A(i) = " + i + ", B(j) = " + j);
 
-            Console.Write(label + "  ");
+            Debug.Write(label + "  ");
             for (int n = 0; n < table.GetLength(1); ++n)
             {
                 char nodeLabel = ' ';
@@ -257,23 +263,24 @@ namespace Algorithms.TreeDifference
                 {
                     try
                     {
-                        nodeLabel = Convert.ToChar(_treeB[sj - 1 + n].Value);
+                        //                        nodeLabel = Convert.ToChar(_treeB[sj - 1 + n].Value);
+                        nodeLabel = (char)('A'+n);
                     }
                     catch
                     {
                         nodeLabel = '?';
                     }
                 }
-                Console.Write( $"  {nodeLabel}" );
+                Debug.Write( $"  {nodeLabel}" );
             }
-            Console.WriteLine();
+            Debug.WriteLine("");
 
-            Console.Write("    ");
+            Debug.Write("    ");
             for (int n = 0; n < table.GetLength(1); n++)
             {
-                Console.Write(string.Format("{0}", n == 0 ? " ^^" : $" {n:00}"));
+                Debug.Write(string.Format("{0}", n == 0 ? " ^^" : $" {n:00}"));
             }
-            Console.WriteLine();
+            Debug.WriteLine("");
 
             for (int m = 0; m < table.GetLength(0); m++)
             {
@@ -282,40 +289,41 @@ namespace Algorithms.TreeDifference
                 {
                     try
                     {
-                        nodeLabel = Convert.ToChar(_treeA[si - 1 + m].Value);
+//                        nodeLabel = Convert.ToChar(_treeA[si - 1 + m].Value);
+                        nodeLabel = (char)('A' + m);
                     }
                     catch
                     {
                         nodeLabel = '?';
                     }
                 }
-                Console.Write($"{nodeLabel}");
-                Console.Write(string.Format("{0}", m == 0 ? " ^^" : $" {m:00}"));
+                Debug.Write($"{nodeLabel}");
+                Debug.Write(string.Format("{0}", m == 0 ? " ^^" : $" {m:00}"));
 
-                Console.ForegroundColor = ConsoleColor.Blue;
+//                Console.ForegroundColor = ConsoleColor.Blue;
                 for (int n = 0; n < table.GetLength(1); n++)
                 {
                     if (table[m, n] == int.MaxValue)
                     {
-                        Console.Write($" ..");
+                        Debug.Write($" ..");
                     }
                     else
                     {
-                        Console.Write($" {table[m, n]:00}");
+                        Debug.Write($" {table[m, n]:00}");
                     }
                 }
-                Console.ResetColor();
-                Console.WriteLine();
+//                Console.ResetColor();
+                Debug.WriteLine("");
             }
-            Console.WriteLine();
+            Debug.WriteLine("");
         }
 
         private void DumpOperations(int i, int j)
         {
-            Console.WriteLine("Operations:");
+            Debug.WriteLine("Operations:");
             foreach( Operation op in _operations[i,j] )
             {
-                Console.WriteLine(op.ToString());
+                Debug.WriteLine(op.ToString());
             }
         }
 #endif
